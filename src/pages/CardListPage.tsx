@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { Card } from "../types/card";
-import { Link } from "react-router";
+import { CardImage } from "../components/CardImage";
 
 type CardsResponse = {
     cards: Card[];
@@ -12,7 +12,7 @@ export const CardListPage = () => {
 
     const [cards, setCards] = useState<Card[]>([]);
 
-    const [cardKeyword, setcardKeyword] = useState('');
+    const [cardKeyword, setCardKeyword] = useState('');
 
     const fetchCards = async () => {
         try {
@@ -41,9 +41,7 @@ export const CardListPage = () => {
 
                 <div className="w-full flex flex-wrap">
                     {cards.map((card) => (
-                        <Link to={`/cards/${card.id}`}>
-                            <img src="./images/default_card.png" alt="" className="w-50 object-cover" />
-                        </Link>
+                        <CardImage key={card.id} card={card} />
                     ))}
                 </div>
             </div>
@@ -57,7 +55,7 @@ export const CardListPage = () => {
                         <input
                             type="text"
                             value={cardKeyword}
-                            onChange={(event) => setcardKeyword(event.target.value)}
+                            onChange={(event) => setCardKeyword(event.target.value)}
                             placeholder="カード名を検索"
                         />
                     </div>
