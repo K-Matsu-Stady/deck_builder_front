@@ -35,27 +35,38 @@ export const CardDetailPage = () => {
     }, []);
 
     return (
-        <div>
-            <h1>カード詳細</h1>
+        <div className="w-full h-full flex flex-col justify-between px-5">
+            <h1 className="text-2xl font-bold py-5">カード詳細</h1>
 
-            <div>
-                <p>{card?.card_detail.name}</p>
-                <img src="./images/default_card.png" alt="" className="w-50 object-cover" />
-            </div>
-
-            <div>
-                <div>
-                    <label>特徴</label>
-                    <p>
-                        {card?.card_detail.traits.map((trait) => (
-                            <span>{trait.name}</span>
-                        ))}
-                    </p>
+            <div className="flex h-[80%]">
+                <div className="w-[30%]">
+                    <p>{card?.card_detail.name}</p>
+                    <div className="flex justify-center items-center">
+                        <img
+                            src={`/images/${card?.image_path}`}
+                            alt={card?.card_detail.name}
+                            onError={(e) => {
+                                e.currentTarget.src = '/images/default_card.png';
+                            }}
+                            className="w-50 object-cover"
+                        />
+                    </div>
                 </div>
 
-                <div>
-                    <label>色</label>
-                    <p>{card?.card_detail.color}</p>
+                <div className="w-[70%]">
+                    <div>
+                        <label>特徴</label>
+                        <p>
+                            {card?.card_detail.traits.map((trait) => (
+                                <span key={trait.id}>{trait.name}</span>
+                            ))}
+                        </p>
+                    </div>
+
+                    <div>
+                        <label>色</label>
+                        <p>{card?.card_detail.color}</p>
+                    </div>
                 </div>
             </div>
 

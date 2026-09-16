@@ -7,16 +7,24 @@ type CardsResponse = {
     status: boolean;
 };
 
+
+// 一旦検索は名前のみ
 export const CardListPage = () => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
     const [cards, setCards] = useState<Card[]>([]);
 
     const [cardKeyword, setCardKeyword] = useState('');
+    const [searchCardKeyword, setSearchCardKeyword] = useState('');
 
     const fetchCards = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/api/cards`);
+            let url = `${API_BASE_URL}/api/cards`;
+            if (searchCardKeyword !== '') {
+                url += `?name=${encodeURIComponent(searchCardKeyword)}`;
+            }
+
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`カードの取得に失敗しました: ${response.status}`);
@@ -32,7 +40,19 @@ export const CardListPage = () => {
 
     useEffect(() => {
         fetchCards();
-    }, []);
+    }, [searchCardKeyword]);
+
+    const handleSearch = (
+        event: React.FormEvent<HTMLFormElement>
+    ) => {
+        event.preventDefault();
+        setSearchCardKeyword(cardKeyword);
+    };
+
+    const handleReset = () => {
+        setCardKeyword('');
+        setSearchCardKeyword('');
+    };
 
     return (
         <div className="flex divide-x">
@@ -49,7 +69,7 @@ export const CardListPage = () => {
             <div className="w-[25%]">
                 <h2>カード検索</h2>
 
-                <form>
+                <form onSubmit={handleSearch}>
                     <div>
                         <label>カード名</label>
                         <input
@@ -62,7 +82,7 @@ export const CardListPage = () => {
 
                     <button type="submit">検索</button>
 
-                    <button type="button">リセット</button>
+                    <button type="button" onClick={handleReset}>リセット</button>
                 </form>
             </div>
         </div>
