@@ -9,7 +9,7 @@ type CardImageProps = {
 export const CardImage = ({
     card,
 }: CardImageProps) => {
-    const [imgSrc, setImgSrc] = useState(`./images/${card.image_path}`);
+    const [imgSrc, setImgSrc] = useState(`/images/${card.image_path}`);
 
     return (
         <Link to={`/cards/${card.id}`}>
@@ -17,7 +17,7 @@ export const CardImage = ({
                 src={imgSrc}
                 alt=""
                 onError={() => {
-                    setImgSrc('./images/default_card.png');
+                    setImgSrc('/images/default_card.png');
                 }}
                 className="w-50 object-cover p-1"
             />
