@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Deck } from "../types/deck";
+import { PageHeader } from "../components/PageHeader";
+import { Button } from "../components/Button";
 
 type DecksResponse = {
     decks: Deck[];
@@ -33,21 +35,25 @@ export const DeckListPage = () => {
     }, []);
 
     return (
-        <div className="flex divide-x">
-            <div className="w-[75%]">
-                <h1>デッキ一覧</h1>
+        <div>
+            <PageHeader title="デッキ一覧">
+                <Button>新規作成</Button>
+            </PageHeader>
 
-                {decks && decks.length > 0 ? (
-                    <div className="w-full flex flex-wrap">
-                        {decks.map((deck) => (
-                            <div key={deck.id}>
-                                <p>{deck.name}</p>
-                            </div>
-                        ))}
-                    </div>
-                ) : (
-                    <p>データがありません</p>
-                )}
+            <div className="flex divide-x">
+                <div className="w-[75%]">
+                    {decks && decks.length > 0 ? (
+                        <div className="w-full flex flex-wrap">
+                            {decks.map((deck) => (
+                                <div key={deck.id}>
+                                    <p>{deck.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p>データがありません</p>
+                    )}
+                </div>
             </div>
         </div>
     );
