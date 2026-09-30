@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { CardWithDetail } from "../types/cardWithDetail";
+import { PageHeader } from "../components/PageHeader";
 
 type CardWithDetailsResponse = {
     cards: CardWithDetail[];
@@ -119,7 +120,7 @@ export const DeckEditPage = () => {
 
     return (
         <div className="w-full h-full">
-            <h1 className="h-[5%]">デッキ編集</h1>
+            <PageHeader title="デッキ編集" />
 
             <div className="h-[95%] flex">
                 <div className="w-[70%] h-full overflow-y-auto flex flex-wrap gap-2.5">
