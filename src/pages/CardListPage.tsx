@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Card } from "../types/card";
 import { CardImage } from "../components/CardImage";
+import { PageHeader } from "../components/PageHeader";
 
 type CardsResponse = {
     cards: Card[];
@@ -55,35 +56,37 @@ export const CardListPage = () => {
     };
 
     return (
-        <div className="flex divide-x">
-            <div className="w-[75%]">
-                <h1>カード一覧</h1>
+        <div>
+            <PageHeader title="カード一覧" />
 
-                <div className="w-full flex flex-wrap">
-                    {cards.map((card) => (
-                        <CardImage key={card.id} card={card} />
-                    ))}
-                </div>
-            </div>
-
-            <div className="w-[25%]">
-                <h2>カード検索</h2>
-
-                <form onSubmit={handleSearch}>
-                    <div>
-                        <label>カード名</label>
-                        <input
-                            type="text"
-                            value={cardKeyword}
-                            onChange={(event) => setCardKeyword(event.target.value)}
-                            placeholder="カード名を検索"
-                        />
+            <div className="flex divide-x">
+                <div className="w-[75%]">
+                    <div className="w-full flex flex-wrap">
+                        {cards.map((card) => (
+                            <CardImage key={card.id} card={card} />
+                        ))}
                     </div>
+                </div>
 
-                    <button type="submit">検索</button>
+                <div className="w-[25%]">
+                    <h2>カード検索</h2>
 
-                    <button type="button" onClick={handleReset}>リセット</button>
-                </form>
+                    <form onSubmit={handleSearch}>
+                        <div>
+                            <label>カード名</label>
+                            <input
+                                type="text"
+                                value={cardKeyword}
+                                onChange={(event) => setCardKeyword(event.target.value)}
+                                placeholder="カード名を検索"
+                            />
+                        </div>
+
+                        <button type="submit">検索</button>
+
+                        <button type="button" onClick={handleReset}>リセット</button>
+                    </form>
+                </div>
             </div>
         </div>
     );

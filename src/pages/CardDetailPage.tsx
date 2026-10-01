@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router";
 import type { CardWithDetail } from "../types/cardWithDetail";
+import { PageHeader } from "../components/PageHeader";
 
 type CardResponse = {
     card: CardWithDetail;
@@ -35,44 +36,47 @@ export const CardDetailPage = () => {
     }, []);
 
     return (
-        <div className="w-full h-full flex flex-col justify-between px-5">
-            <h1 className="text-2xl font-bold py-5">カード詳細</h1>
+        <div>
+            <PageHeader title="カード詳細" />
 
-            <div className="flex h-[80%]">
-                <div className="w-[30%]">
-                    <p>{card?.card_detail.name}</p>
-                    <div className="flex justify-center items-center">
-                        <img
-                            src={`/images/${card?.image_path}`}
-                            alt={card?.card_detail.name}
-                            onError={(e) => {
-                                e.currentTarget.src = '/images/default_card.png';
-                            }}
-                            className="w-50 object-cover"
-                        />
+            <div className="w-full h-full flex flex-col justify-between px-5">
+                <div className="flex h-[80%]">
+                    <div className="w-[30%]">
+                        <p>{card?.card_detail.name}</p>
+                        <div className="flex justify-center items-center">
+                            <img
+                                src={`/images/${card?.image_path}`}
+                                alt={card?.card_detail.name}
+                                onError={(e) => {
+                                    e.currentTarget.src = '/images/default_card.png';
+                                }}
+                                className="w-50 object-cover"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="w-[70%]">
+                        <div>
+                            <label>特徴</label>
+                            <p>
+                                {card?.card_detail.traits.map((trait) => (
+                                    <span key={trait.id}>{trait.name}</span>
+                                ))}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label>色</label>
+                            <p>{card?.card_detail.color}</p>
+                        </div>
                     </div>
                 </div>
 
-                <div className="w-[70%]">
-                    <div>
-                        <label>特徴</label>
-                        <p>
-                            {card?.card_detail.traits.map((trait) => (
-                                <span key={trait.id}>{trait.name}</span>
-                            ))}
-                        </p>
-                    </div>
-
-                    <div>
-                        <label>色</label>
-                        <p>{card?.card_detail.color}</p>
-                    </div>
-                </div>
+                <Link to="/cards">
+                    一覧へ戻る
+                </Link>
             </div>
-
-            <Link to="/cards">
-                一覧へ戻る
-            </Link>
         </div>
+        
     );
 };
