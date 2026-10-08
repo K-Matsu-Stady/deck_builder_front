@@ -1,19 +1,26 @@
 import { useEffect, useState } from "react";
 import type { CardWithDetail } from "../types/cardWithDetail";
 import { PageHeader } from "../components/PageHeader";
+import { useParams } from "react-router";
+import type { Deck } from "../types/deck";
+import type { DeckWithCard } from "../types/deckWithCard";
+import type { DeckCard } from "../types/deckCard";
 
 type CardWithDetailsResponse = {
     cards: CardWithDetail[];
     status: boolean;
 };
 
-type DeckCard = {
-    card: CardWithDetail;
-    count: number;
-}
+type DeckWithCardsResponse = {
+    deck: DeckWithCard;
+    status: boolean;
+};
 
 export const DeckEditPage = () => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
+    const { id } = useParams<{ id: string }>();
+    const isEdit = id !== undefined;
 
     const [cards, setCards] = useState<CardWithDetail[]>([]);
     const [deckCards, setDeckCards] = useState<DeckCard[]>([]);
@@ -35,9 +42,32 @@ export const DeckEditPage = () => {
         }
     };
 
+    const fetchDeckCards = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/api/decks/${id}`);
+
+            if (!response.ok) {
+                throw new Error(`デッキの取得に失敗しました: ${response.status}`);
+            }
+
+            const data: DeckWithCardsResponse = await response.json();
+
+            setDeckCards(data.deck.cards);
+            setDeckName(data.deck.name);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         fetchCards();
-    }, []);
+
+        if (!isEdit) {
+            return;
+        }
+
+        fetchDeckCards();
+    }, [id, isEdit]);
 
     const handleAddCard = (card: CardWithDetail) => {
         const existingCard = deckCards.find(
@@ -100,10 +130,11 @@ export const DeckEditPage = () => {
                 deckCards: deckCards,
             };
 
-            console.log(requestBody);
+            const url = isEdit ? `${API_BASE_URL}/api/decks/${id}` : `${API_BASE_URL}/api/decks`;
+            const method = isEdit ? 'PUT' : 'POST';
 
-            const response = await fetch(`${API_BASE_URL}/api/decks`, {
-                method: 'POST',
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -113,6 +144,8 @@ export const DeckEditPage = () => {
             if (!response.ok) {
                 throw new Error(`デッキの登録に失敗しました: ${response.status}`);
             }
+
+            console.log(await response.json());
         } catch (error) {
             console.log(error);
         }
@@ -120,7 +153,7 @@ export const DeckEditPage = () => {
 
     return (
         <div className="w-full h-full">
-            <PageHeader title="デッキ編集" />
+            <PageHeader title={isEdit ? "デッキ編集" : "デッキ新規作成"} />
 
             <div className="h-[95%] flex">
                 <div className="w-[70%] h-full overflow-y-auto flex flex-wrap gap-2.5">
@@ -131,7 +164,7 @@ export const DeckEditPage = () => {
                             onClick={() => handleAddCard(card)}
                         >
                             <img
-                                src={`/ images / ${card.image_path}`}
+                                src={`/images/${card.image_path}`}
                                 alt={card.card_detail.name}
                                 onError={(e) => {
                                     e.currentTarget.src = '/images/default_card.png';
@@ -164,7 +197,7 @@ export const DeckEditPage = () => {
                             {deckCards.map((deckCard) => (
                                 <div key={deckCard.card.id}>
                                     <img
-                                        src={`/ images / ${deckCard.card.image_path}`}
+                                        src={`/images/${deckCard.card.image_path}`}
                                         alt={deckCard.card.card_detail.name}
                                         onError={(e) => {
                                             e.currentTarget.src = '/images/default_card.png';
