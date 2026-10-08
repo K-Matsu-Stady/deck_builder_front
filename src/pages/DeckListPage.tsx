@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import type { Deck } from "../types/deck";
 import { PageHeader } from "../components/PageHeader";
 import { Button } from "../components/Button";
+import { SquarePen } from "lucide-react";
+import { Link } from "react-router";
 
 type DecksResponse = {
     decks: Deck[];
@@ -45,8 +47,11 @@ export const DeckListPage = () => {
                     {decks && decks.length > 0 ? (
                         <div className="w-full flex flex-wrap">
                             {decks.map((deck) => (
-                                <div key={deck.id}>
+                                <div key={deck.id} className="flex gap-2.5">
                                     <p>{deck.name}</p>
+                                    <Link to={`/decks/${deck.id}/edit`}>
+                                        <SquarePen />
+                                    </Link>
                                 </div>
                             ))}
                         </div>

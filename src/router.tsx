@@ -22,7 +22,11 @@ export const router = createBrowserRouter([
         element: <DeckListPage />
     },
     {
-        path: '/decks/create',
+        path: '/decks/new',
         element: <DeckEditPage />
     },
+    {
+        path: '/decks/:id/edit',
+        element: <DeckEditPage />
+    }
 ]);
