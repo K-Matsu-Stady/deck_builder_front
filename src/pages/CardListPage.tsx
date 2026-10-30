@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import type { Card } from "../types/card";
 import { CardImage } from "../components/CardImage";
 import { PageHeader } from "../components/PageHeader";
+import type { CardSearchConditions } from "../types/cardSearchConditions";
+import { initialCardSearchConditions } from "../constants/initialCardSearchConditions";
+import { CardSearchPanel } from "../components/CardSearchPanel";
 
 type CardsResponse = {
     cards: Card[];
@@ -13,19 +16,13 @@ type CardsResponse = {
 export const CardListPage = () => {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-    const [cards, setCards] = useState<Card[]>([]);
+    const [conditions, setConditions] = useState<CardSearchConditions>(initialCardSearchConditions);
 
-    const [cardKeyword, setCardKeyword] = useState('');
-    const [searchCardKeyword, setSearchCardKeyword] = useState('');
+    const [cards, setCards] = useState<Card[]>([]);
 
     const fetchCards = async () => {
         try {
-            let url = `${API_BASE_URL}/api/cards`;
-            if (searchCardKeyword !== '') {
-                url += `?name=${encodeURIComponent(searchCardKeyword)}`;
-            }
-
-            const response = await fetch(url);
+            const response = await fetch(`${API_BASE_URL}/api/cards`);
 
             if (!response.ok) {
                 throw new Error(`カードの取得に失敗しました: ${response.status}`);
@@ -41,18 +38,59 @@ export const CardListPage = () => {
 
     useEffect(() => {
         fetchCards();
-    }, [searchCardKeyword]);
+    }, []);
 
-    const handleSearch = (
-        event: React.FormEvent<HTMLFormElement>
-    ) => {
-        event.preventDefault();
-        setSearchCardKeyword(cardKeyword);
-    };
+    const handleSearch = async () => {
+        try {
+            const params = new URLSearchParams();
 
-    const handleReset = () => {
-        setCardKeyword('');
-        setSearchCardKeyword('');
+            if (conditions.name.trim()) {
+                params.set("name", conditions.name.trim());
+            }
+            
+            conditions.colors.forEach((color) => {
+                params.append("colors[]", color);
+            });
+
+            conditions.types.forEach((type) => {
+                params.append("types[]", type);
+            });
+
+            if (conditions.minCost !== null) {
+                params.set("minCost", String(conditions.minCost));
+            }
+
+            if (conditions.maxCost !== null) {
+                params.set("maxCost", String(conditions.maxCost));
+            }
+
+            if (conditions.minEnergy !== null) {
+                params.set("minEnergy", String(conditions.minEnergy));
+            }
+
+            if (conditions.maxEnergy !== null) {
+                params.set("maxEnergy", String(conditions.maxEnergy));
+            }
+
+            if (conditions.minBp !== null) {
+                params.set("minBp", String(conditions.minBp));
+            }
+
+            if (conditions.maxBp !== null) {
+                params.set("maxBp", String(conditions.maxBp));
+            }
+
+            const response = await fetch(`${API_BASE_URL}/api/cards?${params.toString()}`);
+
+            if (!response.ok) {
+                throw new Error("カード検索に失敗しました");
+            }
+
+            const data = await response.json();
+            setCards(data.cards);
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return (
@@ -68,25 +106,11 @@ export const CardListPage = () => {
                     </div>
                 </div>
 
-                <div className="w-[25%]">
-                    <h2>カード検索</h2>
-
-                    <form onSubmit={handleSearch}>
-                        <div>
-                            <label>カード名</label>
-                            <input
-                                type="text"
-                                value={cardKeyword}
-                                onChange={(event) => setCardKeyword(event.target.value)}
-                                placeholder="カード名を検索"
-                            />
-                        </div>
-
-                        <button type="submit">検索</button>
-
-                        <button type="button" onClick={handleReset}>リセット</button>
-                    </form>
-                </div>
+                <CardSearchPanel
+                    conditions={conditions}
+                    onChange={setConditions}
+                    onSearch={handleSearch}
+                />
             </div>
         </div>
     );
